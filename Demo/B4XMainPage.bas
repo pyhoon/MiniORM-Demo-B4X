@@ -56,7 +56,8 @@ Public Sub ConfigureDatabase
 	Dim con As Conn
 	con.Initialize
 	con.DBType = "SQLite"
-	con.DBName = "MiniORM"
+	con.DBName = "MiniORM.db"
+	
 	#If B4J
 	con.DBDir = File.DirApp
 	'xui.SetDataFolder(con.DBName)
@@ -64,25 +65,18 @@ Public Sub ConfigureDatabase
 	#Else
 	con.DBDir = xui.DefaultFolder 
 	#End If
-	'con.DBFile = con.DBName & ".db"
-
-	'If File.Exists(con.DBDir, con.DBFile) Then
-	'	File.Delete(con.DBDir, con.DBFile)
-	'	LogColor("Database deleted", -65536)
-	'	ExitApplication
-	'End If
 
 	#If B4J
 	'con.DBType = "MySQL"
 	'con.DBName = "miniorm"
+	'con.DbHost = "localhost"
 	'con.User = "root"
 	'con.Password = "password"
 	'con.DriverClass = "com.mysql.cj.jdbc.Driver"
-	'con.JdbcUrl = "jdbc:mysql://localhost/miniorm?characterEncoding=utf8&useSSL=false"
+	'con.JdbcUrl = "jdbc:mysql://{DbHost}:{DbPort}/{DbName}?characterEncoding=utf8&useSSL=False"
 	#End If
 
 	Try
-		'Log("Checking database...")
 		DBConnector.Initialize(con)
 		Wait For (DBConnector.DBExist) Complete (DBFound As Boolean)
 		If DBFound Then
