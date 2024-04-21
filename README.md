@@ -1,5 +1,5 @@
 # MiniORM-Demo-B4X
-version: 1.02
+version: 1.03
 
 An example of using MiniORMUtils library to create cross platform database CRUD apps for Android (B4A), iOS (B4i) and Desktop (B4J)
 
