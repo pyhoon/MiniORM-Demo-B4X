@@ -44,15 +44,11 @@ Private Sub DBEngine As String
 	Return DBConnector.DBEngine
 End Sub
 
-Private Sub OpenDBConnection As SQL
+Private Sub DBOpen As SQL
 	Return DBConnector.DBOpen
 End Sub
 
-Private Sub CreateDBConnection As SQL
-	Return DBConnector.DBCreate
-End Sub
-
-Private Sub CloseDBConnection
+Private Sub DBClose
 	DBConnector.DBClose
 End Sub
 
@@ -68,7 +64,7 @@ Public Sub ConfigureDatabase
 	#Else
 	con.DBDir = xui.DefaultFolder 
 	#End If
-	con.DBFile = con.DBName & ".db"
+	'con.DBFile = con.DBName & ".db"
 
 	'If File.Exists(con.DBDir, con.DBFile) Then
 	'	File.Delete(con.DBDir, con.DBFile)
@@ -88,17 +84,10 @@ Public Sub ConfigureDatabase
 	Try
 		'Log("Checking database...")
 		DBConnector.Initialize(con)
-		Select con.DBType.ToUpperCase
-			Case "SQLITE", "DBF"
-				Dim DBFound As Boolean = DBConnector.DBExist2(con)
-			#If B4J
-			Case Else
-				Wait For (DBConnector.DBExist) Complete (DBFound As Boolean)
-			#End If
-		End Select
+		Wait For (DBConnector.DBExist) Complete (DBFound As Boolean)
 		If DBFound Then
 			LogColor($"${con.DBType} database found!"$, -16776961)
-			DB.Initialize(OpenDBConnection, DBEngine)
+			DB.Initialize(DBOpen, DBEngine)
 			'DB.ShowExtraLogs = True
 			GetCategories
 		Else
@@ -117,8 +106,14 @@ End Sub
 
 Private Sub CreateDatabase
 	LogColor("Creating database...", -65281)
+	Wait For (DBConnector.DBCreate) Complete (Success As Boolean)
+	If Not(Success) Then
+		Log("Database creation failed!")
+		Return
+	End If
+	
 	Dim MDB As MiniORM
-	MDB.Initialize(CreateDBConnection, DBEngine)
+	MDB.Initialize(DBOpen, DBEngine)
 	MDB.ShowExtraLogs = True
 	MDB.UseTimestamps = True
 	MDB.AddAfterCreate = True
@@ -162,8 +157,8 @@ Private Sub CreateDatabase
 		LogColor("Database creation failed!", MDB.COLOR_RED)
 		Log(LastException)
 	End If
-	DBConnector.DBClose
-	DB.Initialize(OpenDBConnection, DBEngine)
+	MDB.Close
+	DB.Initialize(DBOpen, DBEngine)
 	'DB.ShowExtraLogs = True
 	GetCategories
 End Sub
@@ -189,7 +184,7 @@ Private Sub B4XPage_CloseRequest As ResumableSub
 		GetCategories
 		Return False
 	End If
-	CloseDBConnection
+	DBClose
 	Return True
 End Sub
 
