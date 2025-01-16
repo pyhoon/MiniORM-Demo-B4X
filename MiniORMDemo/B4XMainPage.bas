@@ -112,8 +112,10 @@ Private Sub CreateDatabase
 	
 	Dim MDB As MiniORM
 	MDB.Initialize(DBOpen, DBEngine)
-	MDB.ShowExtraLogs = True
+	'MDB.ShowExtraLogs = True
 	MDB.UseTimestamps = True
+	'MDB.ExecuteAfterCreate = True
+	'MDB.ExecuteAfterInsert = True
 	MDB.AddAfterCreate = True
 	MDB.AddAfterInsert = True
 	
@@ -122,31 +124,33 @@ Private Sub CreateDatabase
 	MDB.Create
 	
 	MDB.Columns = Array("category_name")
-	MDB.Parameters = Array As String("Hardwares")
-	MDB.Insert
-	MDB.Parameters = Array As String("Toys")
-	MDB.Insert
+	MDB.Insert2(Array("Hardwares"))
+	MDB.Insert2(Array("Toys"))
 	
+	' set table name
 	MDB.Table = "tbl_products"
-	MDB.Columns.Add(MDB.CreateORMColumn2(CreateMap("Name": "category_id", "Type": MDB.INTEGER)))
-	MDB.Columns.Add(MDB.CreateORMColumn2(CreateMap("Name": "product_code", "Length": "12")))
+	 ' add column to table (Method 1)
+	Dim col1 As ORMColumn
+	col1.ColumnName = "category_id"
+	col1.ColumnType = MDB.INTEGER
+	col1.DefaultValue = ""
+	MDB.Columns.Add(col1)
+	' add column to table (Method 2)
+	MDB.Columns.Add(MDB.CreateORMColumn("product_code", MDB.VARCHAR, "12", "", "", True, True, False))
+	' add column to table (Method 3) - more simpler
 	MDB.Columns.Add(MDB.CreateORMColumn2(CreateMap("Name": "product_name")))
-	Dim PriceColumn As ORMColumn
-	PriceColumn.ColumnName = "product_price"
-	PriceColumn.ColumnType = MDB.DECIMAL
-	PriceColumn.ColumnLength = "10,2"
-	PriceColumn.DefaultValue = "0.00"
-	MDB.Columns.Add(PriceColumn)
+	MDB.Columns.Add(MDB.CreateORMColumn2(CreateMap("Name": "product_price", "Type": MDB.DECIMAL, "Size": "10,2", "Default": 0.0)))
+	' add a foreign key to category table
 	MDB.Foreign("category_id", "id", "tbl_categories", "", "")
 	MDB.Create
 	
 	MDB.Columns = Array("category_id", "product_code", "product_name", "product_price")
+	' add a row (Method 1)
 	MDB.Parameters = Array As String(2, "T001", "Teddy Bear", 99.9)
 	MDB.Insert
-	MDB.Parameters = Array As String(1, "H001", "Hammer", 15.75)
-	MDB.Insert
-	MDB.Parameters = Array As String(2, "T002", "Optimus Prime", 1000.00)
-	MDB.Insert
+	' add a row (Method 2)
+	MDB.Insert2(Array(1, "H001", "Hammer", 15.75))
+	MDB.Insert2(Array(2, "T002", "Optimus Prime", 1000))
 	
 	Wait For (MDB.ExecuteBatch) Complete (Success As Boolean)
 	If Success Then
@@ -157,7 +161,6 @@ Private Sub CreateDatabase
 	End If
 	MDB.Close
 	DB.Initialize(DBOpen, DBEngine)
-	'DB.ShowExtraLogs = True
 	GetCategories
 End Sub
 
@@ -165,9 +168,9 @@ Private Sub B4XPage_Created (Root1 As B4XView)
 	Root = Root1
 	Root.LoadLayout("MainPage")
 	B4XPages.SetTitle(Me, "MiniORM")
-	#if B4J
+	'#If B4J
 	'CallSubDelayed3(Me, "SetScrollPaneBackgroundColor", clvRecord, xui.Color_Transparent)
-	#End If
+	'#End If
 	ConfigureDatabase
 End Sub
 
@@ -193,7 +196,7 @@ Private Sub IME_HeightChanged (NewHeight As Int, OldHeight As Int)
 	PrefDialog3.KeyboardHeightChanged(NewHeight)
 End Sub
 
-#If B4J
+'#If B4J
 'Private Sub SetScrollPaneBackgroundColor(View As CustomListView, Color As Int)
 '	Dim SP As JavaObject = View.GetBase.GetView(0)
 '	Dim V As B4XView = SP
@@ -201,7 +204,7 @@ End Sub
 '	Dim V As B4XView = SP.RunMethod("lookup", Array(".viewport"))
 '	V.Color = Color
 'End Sub
-#End If
+'#End If
 
 Private Sub B4XPage_Appear
 	'GetCategories
@@ -259,7 +262,7 @@ Private Sub GetProducts
 	DB.Table = "tbl_products p"
 	DB.Select = Array("p.*", "c.category_name")
 	DB.Join = DB.CreateORMJoin("tbl_categories c", "p.category_id = c.id", "")
-	DB.setWhereValue(Array("c.id = ?"), Array As String(CategoryId))
+	DB.WhereValue(Array("c.id = ?"), Array(CategoryId))
 	DB.Query
 	Dim Items As List = DB.Results
 	' ===   MiniORM end   ===
@@ -387,7 +390,7 @@ Private Sub ShowDialog1 (Action As String, Item As Map)
 		If 0 = Item.Get("id") Then ' New row
 			' ===  MiniORM start  ===
 			DB.Table = "tbl_categories"
-			DB.setWhereValue(Array("category_name = ?"), Array As String(Item.Get("Category Name")))
+			DB.WhereValue(Array("category_name = ?"), Array(Item.Get("Category Name")))
 			DB.Query
 			'If DB.First.IsInitialized Then
 			If DB.Found Then
@@ -396,8 +399,7 @@ Private Sub ShowDialog1 (Action As String, Item As Map)
 			End If
 			DB.Reset
 			DB.Columns = Array("category_name")
-			DB.Parameters = Array As String(Item.Get("Category Name"))
-			DB.Save
+			DB.Save2(Array(Item.Get("Category Name")))
 			xui.MsgboxAsync("New category created!", $"ID: ${DB.First.Get("id")}"$)
 			' ===   MiniORM end   ===
 		Else
@@ -444,8 +446,7 @@ Private Sub ShowDialog2 (Action As String, Item As Map)
 			DB.Reset
 			DB.Columns = Array("category_id", "product_code", "product_name", "product_price")
 			Dim SelectedCategory As Int = GetCategoryId(Item.Get("Category"))
-			DB.Parameters = Array As String(SelectedCategory, Item.Get("Product Code"), Item.Get("Product Name"), Item.Get("Product Price"))
-			DB.Save
+			DB.Save2(Array(SelectedCategory, Item.Get("Product Code"), Item.Get("Product Name"), Item.Get("Product Price")))
 			CategoryId = SelectedCategory
 			xui.MsgboxAsync("New product created!", $"ID: ${DB.First.Get("id")}"$)
 			' ===   MiniORM end   ===
