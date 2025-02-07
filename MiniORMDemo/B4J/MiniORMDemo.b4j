@@ -25,13 +25,12 @@ NumberOfLibraries=6
 NumberOfModules=1
 Version=10
 @EndOfDesignText@
-' Version 1.04
+' Version 1.05
 #Region Project Attributes 
 	#MainFormWidth: 600
 	#MainFormHeight: 600 
 #End Region
-#AdditionalJar: sqlite-jdbc-3.39.3.0
-'#AdditionalJar: sqlite-jdbc-3.43.0.0
+#AdditionalJar: sqlite-jdbc-3.7.2
 '#AdditionalJar: mysql-connector-java-8.0.30
 
 Sub Process_Globals

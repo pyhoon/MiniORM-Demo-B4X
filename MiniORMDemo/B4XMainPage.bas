@@ -124,8 +124,8 @@ Private Sub CreateDatabase
 	MDB.Create
 	
 	MDB.Columns = Array("category_name")
-	MDB.Insert2(Array("Hardwares"))
-	MDB.Insert2(Array("Toys"))
+	MDB.Insert2(Array As String("Hardwares"))
+	MDB.Insert2(Array As String("Toys"))
 	
 	' set table name
 	MDB.Table = "tbl_products"
@@ -149,8 +149,8 @@ Private Sub CreateDatabase
 	MDB.Parameters = Array As String(2, "T001", "Teddy Bear", 99.9)
 	MDB.Insert
 	' add a row (Method 2)
-	MDB.Insert2(Array(1, "H001", "Hammer", 15.75))
-	MDB.Insert2(Array(2, "T002", "Optimus Prime", 1000))
+	MDB.Insert2(Array As String(1, "H001", "Hammer", 15.75))
+	MDB.Insert2(Array As String(2, "T002", "Optimus Prime", 1000))
 	
 	Wait For (MDB.ExecuteBatch) Complete (Success As Boolean)
 	If Success Then
@@ -262,7 +262,7 @@ Private Sub GetProducts
 	DB.Table = "tbl_products p"
 	DB.Select = Array("p.*", "c.category_name")
 	DB.Join = DB.CreateORMJoin("tbl_categories c", "p.category_id = c.id", "")
-	DB.WhereValue(Array("c.id = ?"), Array(CategoryId))
+	DB.WhereValue(Array("c.id = ?"), Array As String(CategoryId))
 	DB.Query
 	Dim Items As List = DB.Results
 	' ===   MiniORM end   ===
@@ -390,7 +390,7 @@ Private Sub ShowDialog1 (Action As String, Item As Map)
 		If 0 = Item.Get("id") Then ' New row
 			' ===  MiniORM start  ===
 			DB.Table = "tbl_categories"
-			DB.WhereValue(Array("category_name = ?"), Array(Item.Get("Category Name")))
+			DB.WhereValue(Array("category_name = ?"), Array As String(Item.Get("Category Name")))
 			DB.Query
 			'If DB.First.IsInitialized Then
 			If DB.Found Then
@@ -399,7 +399,7 @@ Private Sub ShowDialog1 (Action As String, Item As Map)
 			End If
 			DB.Reset
 			DB.Columns = Array("category_name")
-			DB.Save2(Array(Item.Get("Category Name")))
+			DB.Save2(Array As String(Item.Get("Category Name")))
 			xui.MsgboxAsync("New category created!", $"ID: ${DB.First.Get("id")}"$)
 			' ===   MiniORM end   ===
 		Else
@@ -446,7 +446,7 @@ Private Sub ShowDialog2 (Action As String, Item As Map)
 			DB.Reset
 			DB.Columns = Array("category_id", "product_code", "product_name", "product_price")
 			Dim SelectedCategory As Int = GetCategoryId(Item.Get("Category"))
-			DB.Save2(Array(SelectedCategory, Item.Get("Product Code"), Item.Get("Product Name"), Item.Get("Product Price")))
+			DB.Save2(Array As String(SelectedCategory, Item.Get("Product Code"), Item.Get("Product Name"), Item.Get("Product Price")))
 			CategoryId = SelectedCategory
 			xui.MsgboxAsync("New product created!", $"ID: ${DB.First.Get("id")}"$)
 			' ===   MiniORM end   ===
