@@ -81,7 +81,7 @@ Public Sub ConfigureDatabase
 
 	Try
 		DBConnector.Initialize(con)
-		'Wait For (DBConnector.DBExist) Complete (DBFound As Boolean)
+		'Wait For (DBConnector.DBExist) Complete (DBFound As Boolean) ' MySQL
 		Dim DBFound As Boolean = DBConnector.DBExist
 		If DBFound Then
 			LogColor($"${con.DBType} database found!"$, COLOR_BLUE)
@@ -337,6 +337,7 @@ Private Sub CreateDialog1
 	PrefDialog1.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
 	PrefDialog1.Dialog.TitleBarHeight = 50dip
 	PrefDialog1.LoadFromJson(File.ReadString(File.DirAssets, "template_category.json"))
+	PrefDialog1.SetEventsListener(Me, "PrefDialog1") '<-- must add to handle events.
 End Sub
 
 Private Sub CreateDialog2
@@ -378,7 +379,6 @@ Private Sub ShowDialog1 (Action As String, Item As Map)
 	Sleep(0)
 	PrefDialog1.CustomListView1.sv.Height = PrefDialog1.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
 	#End If
-	' Fix Linux UI (Long Text Button)
 	Dim btnCancel As B4XView = PrefDialog1.Dialog.GetButton(xui.DialogResponse_Cancel)
 	btnCancel.Width = btnCancel.Width + 20dip
 	btnCancel.Left = btnCancel.Left - 20dip
@@ -486,7 +486,6 @@ Private Sub ShowDialog3 (Item As Map, Id As Int)
 	#if B4A or B4i
 	PrefDialog3.Dialog.Base.Top = 100dip ' Make it lower
 	#Else
-	' Fix Linux UI (Long Text Button)
 	'Dim sp As ScrollPane = PrefDialog3.CustomListView1.sv
 	'sp.SetVScrollVisibility("NEVER")
 	Sleep(0)
@@ -534,9 +533,24 @@ Private Sub ShowDialog3 (Item As Map, Id As Int)
 	End If
 End Sub
 
+Private Sub PrefDialog1_BeforeDialogDisplayed (Template As Object)
+	Try
+		Dim btnCancel As B4XView = PrefDialog1.Dialog.GetButton(xui.DialogResponse_Cancel)
+		btnCancel.Width = btnCancel.Width + 20dip
+		btnCancel.Left = btnCancel.Left - 20dip
+		btnCancel.TextColor = xui.Color_Red
+		Dim btnOk As B4XView = PrefDialog1.Dialog.GetButton(xui.DialogResponse_Positive)
+		If btnOk.IsInitialized Then
+			btnOk.Width = btnOk.Width + 20dip
+			btnOk.Left = btnCancel.Left - btnOk.Width
+		End If
+	Catch
+		Log(LastException)
+	End Try
+End Sub
+
 Private Sub PrefDialog2_BeforeDialogDisplayed (Template As Object)
 	Try
-		' Fix Linux UI (Long Text Button)
 		Dim btnCancel As B4XView = PrefDialog2.Dialog.GetButton(xui.DialogResponse_Cancel)
 		btnCancel.Width = btnCancel.Width + 20dip
 		btnCancel.Left = btnCancel.Left - 20dip
