@@ -1,30 +1,32 @@
 ﻿Build1=Default,b4i.miniorm.demo
 File1=CategoryItem.bil
-File2=MainPage.bil
-File3=ProductItem.bil
-File4=template_category.json
-File5=template_product.json
+File2=icon.png
+File3=MainPage.bil
+File4=ProductItem.bil
+File5=template_category.json
+File6=template_product.json
 FileGroup1=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
 FileGroup5=Default Group
+FileGroup6=Default Group
 Group=Default Group
 Library1=b4xpages
 Library2=b4xpreferencesdialog
 Library3=icore
 Library4=xui views
-Library5=miniormutils
+Library5=miniormutils.v4
 Module1=|relative|..\B4XMainPage
-NumberOfFiles=5
+NumberOfFiles=6
 NumberOfLibraries=5
 NumberOfModules=1
-Version=8.51
+Version=8.8
 @EndOfDesignText@
 'Code module
 #Region  Project Attributes 
 	#ApplicationLabel: MiniORM
-	#Version: 1.06
+	#Version: 4.00
 	'Orientation possible values: Portrait, LandscapeLeft, LandscapeRight and PortraitUpsideDown
 	#iPhoneOrientations: Portrait, LandscapeLeft, LandscapeRight
 	#iPadOrientations: Portrait, LandscapeLeft, LandscapeRight, PortraitUpsideDown
@@ -43,7 +45,6 @@ Version=8.51
 Sub Process_Globals
 	Public App As Application
 	Public NavControl As NavigationController
-
 End Sub
 
 Private Sub Application_Start (Nav As NavigationController)
