@@ -183,7 +183,7 @@ Public Sub ConfigureDatabase
 	#End If
 	#End If
 	#If MySQL Or MariaDB
-		MS.DBName = "pakai"
+		MS.DBName = "miniorm"
 		MS.DbHost = "localhost"
 		MS.User = "root"
 		MS.Password = "password"
