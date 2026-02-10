@@ -9,7 +9,7 @@ An example of using MiniORMUtils library to create cross platform database CRUD 
 - B4XPages
 - B4XPreferencesDialog
 - XUI Views
-- [MiniORMUtils.b4xlib](https://github.com/pyhoon/MiniORMUtils-B4X)
+- [MiniORMUtils](https://github.com/pyhoon/MiniORMUtils-B4X)
 
 **AdditionalJar: (for B4J)**
 - sqlite-jdbc
