@@ -253,7 +253,8 @@ Private Sub CreateDatabase
 	DB.Columns.Add(DB.CreateColumn2(CreateMap("Name": "product_price", "Type": DB.DECIMAL, "Size": "10,2", "Default": 0.0)))
 	'DB.BLOB = "longblob"
 	DB.Columns.Add(DB.CreateColumn2(CreateMap("Name": "product_image", "Type": DB.BLOB)))
-	DB.Foreign("category_id", "id", "tbl_categories", "", "")
+	DB.Foreign = "category_id"
+	DB.References("tbl_categories", "id")
 	DB.Create
 	
 	DB.Columns = Array("category_id", "product_code", "product_name", "product_price")
@@ -310,9 +311,8 @@ Private Sub GetProducts
 	clvRecord.Clear
 	DB.Table = "tbl_products p"
 	DB.ColumnsType = CreateMap("product_image": DB.BLOB)
-	'DB.Select = Array("p.*", "c.category_name")
 	DB.Columns = Array("p.id", "p.product_code", "p.product_name", "p.product_price", "p.product_image", "p.category_id", "c.category_name")
-	DB.Join = DB.CreateJoin("tbl_categories c", "p.category_id = c.id", "")
+	DB.Join("tbl_categories c", "p.category_id = c.id", "")
 	DB.WhereParams(Array("c.id = ?"), Array As Object(CategoryId))
 	DB.Query
 	Dim Items As List = DB.Results
